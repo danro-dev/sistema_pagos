@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  # 1. Base de Datos (PostgreSQL)
+  db:
+    image: postgres:16
+    container_name: payments_db
+    restart: always
+    env_file: .env
+    volumes:
+      # Carga el script de esquema al iniciar la DB
+      - ./postgres/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      # Comando estándar de PostgreSQL para verificar disponibilidad
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s # Tiempo extra para inicializar el servidor antes de chequear
+
+  # 2. Servicio de Pagos (Python/FastAPI)
+  payment_processor:
+    build:
+      context: ./payment-service
+    container_name: payment_processor
+    restart: always
+    env_file: .env
+    ports:
+      - "8001:8001"
+    environment:
+      PYTHONUNBUFFERED: 1 # Asegura que logs se vean en consola
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --log-level info
+    # No necesita esperar a la DB si solo es un procesador de pagos (simula un servicio externo)
+
+  # 3. API REST (Node.js/TypeScript)
+  api_rest:
+    build:
+      context: ./api-rest
+    container_name: api_rest
+    restart: always
+    env_file: .env
+    ports:
+      - "3000:3000"
+    environment:
+      # Configuración de URLs internas de Docker
+      DB_HOST: db # Usa el nombre del servicio 'db'
+      PAYMENT_PROCESSOR_URL: http://payment_processor:8001
+    depends_on:
+      db:
+        condition: service_healthy # Espera a que la DB pase el healthcheck
+      payment_processor:
+        condition: service_started # Solo necesita que el procesador esté corriendo
+
+volumes:
+  postgres_data:

@@ -1,6 +1,5 @@
 # Usa una imagen oficial de Python para tu microservicio
-FROM python:3.11-slim
-
+FROM python:3.12-slim
 # Establece el directorio de trabajo
 WORKDIR /app
 
