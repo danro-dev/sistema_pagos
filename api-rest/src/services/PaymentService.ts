@@ -10,7 +10,7 @@ const PAYMENT_PROCESSOR_URL = process.env.PAYMENT_PROCESSOR_URL || 'http://local
 
 interface PaymentRequestInput {
     usuarioId: string;
-    tarjetaId: number;
+    tarjetaId: string;
     monto: number;
 }
 
@@ -29,9 +29,10 @@ export class PaymentService {
 
     public async createPayment({ usuarioId, tarjetaId, monto }: PaymentRequestInput): Promise<PaymentRecord & { mensaje_procesador: string }> {
         const normalizedUserId = usuarioId.trim();
+        const normalizedCardId = tarjetaId.trim();
 
         // 1. Obtener la tarjeta y el token_hash (debe existir y pertenecer al usuario)
-        const card = await this.userRepository.getCardByUserIdAndCardId(normalizedUserId, tarjetaId);
+        const card = await this.userRepository.getCardByUserIdAndCardId(normalizedUserId, normalizedCardId);
         if (!card) {
             throw new HttpError(`Tarjeta con ID ${tarjetaId} no encontrada o no pertenece al usuario ${usuarioId}.`, 404);
         }
@@ -46,7 +47,7 @@ export class PaymentService {
             // 3. Crear un registro de pago inicial en estado 'PENDING'
             const initialPayment = await this.paymentRepository.createInitialPayment(client, {
                 usuarioId: normalizedUserId,
-                tarjetaId,
+                tarjetaId: normalizedCardId,
                 monto,
                 estado: 'PENDING'
             });

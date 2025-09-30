@@ -32,8 +32,15 @@ export class PaymentController {
                 return;
             }
 
-            if (typeof tarjeta_id !== 'number' || !Number.isInteger(tarjeta_id) || tarjeta_id <= 0) {
-                res.status(400).json({ error: "El identificador de la tarjeta debe ser un entero positivo." });
+            if (typeof tarjeta_id !== 'string') {
+                res.status(400).json({ error: "El identificador de la tarjeta debe ser una cadena UUID." });
+                return;
+            }
+
+            const normalizedCardId = tarjeta_id.trim();
+
+            if (!isValidUUID(normalizedCardId)) {
+                res.status(400).json({ error: "El identificador de la tarjeta debe ser un UUID válido." });
                 return;
             }
             
@@ -44,7 +51,7 @@ export class PaymentController {
 
             const result = await paymentService.createPayment({
                 usuarioId: normalizedUserId,
-                tarjetaId: tarjeta_id,
+                tarjetaId: normalizedCardId,
                 monto
             });
 

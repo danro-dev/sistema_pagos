@@ -43,13 +43,7 @@ router.post('/pagos', paymentController.createPayment);
 *     summary: Obtiene el historial de pagos de un usuario.
 *     description: Devuelve la lista de pagos ordenada por fecha de creación (descendente).
 *     parameters:
-*       - in: path
-*         name: userId
-*         required: true
-*         schema:
-*           type: string
-*           format: uuid
-*         description: Identificador del usuario.
+*       - $ref: '#/components/parameters/UserIdPathParam'
 *     responses:
 *       '200':
 *         description: Listado de pagos del usuario.

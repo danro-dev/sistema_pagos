@@ -6,7 +6,7 @@ export interface User {
 }
 
 export interface Card {
-    id: number;
+    id: string;
     usuario_id: string;
     ultimos_cuatro: string;
     token_hash: string;
@@ -80,7 +80,7 @@ export class UserRepository {
     /**
      * Obtiene una tarjeta por ID y verifica que pertenezca al usuario.
      */
-    public async getCardByUserIdAndCardId(userId: string, cardId: number): Promise<Card | null> {
+    public async getCardByUserIdAndCardId(userId: string, cardId: string): Promise<Card | null> {
         const client = await getDbClient();
         try {
             const query = `

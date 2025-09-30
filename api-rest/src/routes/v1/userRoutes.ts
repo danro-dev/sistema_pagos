@@ -43,13 +43,7 @@ router.post('/usuarios', userController.create);
 *     summary: Registra una tarjeta para un usuario.
 *     description: Almacena los datos tokenizados de una tarjeta ficticia asociada a un usuario existente.
 *     parameters:
-*       - in: path
-*         name: userId
-*         required: true
-*         schema:
-*           type: string
-*           format: uuid
-*         description: Identificador del usuario.
+*       - $ref: '#/components/parameters/UserIdPathParam'
 *     requestBody:
 *       required: true
 *       content:

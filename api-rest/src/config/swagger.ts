@@ -32,6 +32,19 @@ const options: Options = {
       },
     ],
     components: {
+      parameters: {
+        UserIdPathParam: {
+          name: 'userId',
+          in: 'path',
+          required: true,
+          schema: {
+            type: 'string',
+            format: 'uuid',
+          },
+          description: 'Identificador del usuario en formato UUID.',
+          example: 'f6d7f8b0-1234-4c3e-9abc-1d2e3f456789',
+        },
+      },
       schemas: {
         Usuario: {
           type: 'object',

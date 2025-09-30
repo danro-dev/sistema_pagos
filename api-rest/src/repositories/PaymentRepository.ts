@@ -3,7 +3,7 @@ import { PoolClient } from 'pg';
 
 export interface PaymentInputDB {
     usuarioId: string;
-    tarjetaId: number;
+    tarjetaId: string;
     monto: number;
     estado: string;
 }
@@ -11,7 +11,7 @@ export interface PaymentInputDB {
 export interface PaymentRecord {
     id: number;
     usuario_id: string;
-    tarjeta_id: number;
+    tarjeta_id: string;
     monto: number;
     estado: string;
     transaccion_id: string | null;
